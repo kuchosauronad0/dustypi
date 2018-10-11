@@ -4,7 +4,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/bin/bash -c '/bin/cat /dev/ttyUSB0 | /usr/bin/dustypi'
+ExecStart=/usr/bin/dustypi
 Type=simple
 Restart=always
 User=root
