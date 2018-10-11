@@ -1,0 +1,51 @@
+.\" Manpage for dustypi.
+.\" Contact andre.poley@mailbox.org to correct errors or typos.
+.TH man 8 "09 Oct 2018" "0.0.5" "dustypi man page"
+.SH NAME
+.B dustypi
+\- read input in the form 
+.B [0-9]+,[0-9]+,<CR><LF>
+format it for influxdbs lineprotocol and transmit to an influxdb
+.SH SYNOPSIS
+.B dustypi [[
+.I -h
+.B |
+.I --help
+.B ]|[
+.I -d
+.B |
+.I --debug
+.B ]]
+.SH DESCRIPTION
+.B dustypi
+is shell program for reading data from a Dylos DC1700 and sending it to influxdb. It is primarily meant to be used with its corresponding systemd unit which reads its input data from /dev/ttyUSB0. The configuration file is sourced from /etc/dustypi/dustypi.conf
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+prints the help
+.TP
+.BR \-d ", " \-\-debug
+debug statement to test database connectivity
+.SH FILES
+.I /etc/dustypi/dustypi.conf
+.RS
+The system wide configuration file.
+.RE
+.I /lib/systemd/system/dustypi.service
+.RS
+The systemd unit file. If another device than /dev/ttyUSB0 is to be used you can override it with 
+.B systemctl edit dustypi
+.SH EXAMPLES
+Start dustypi:
+.RE
+.RS
+systemctl start dustypi.service 
+.RE
+.fi
+.PP
+.SH SEE ALSO
+systemd(1)
+.SH BUGS
+No known bugs.
+.SH AUTHOR
+Andre Poley (andre.poley@mailbox.org)

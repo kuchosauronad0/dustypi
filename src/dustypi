@@ -1,0 +1,73 @@
+#!/bin/bash
+# This script converts an input string in the form of [0-9]+,[0-9]+<CR><LF> (i.e. a reading from 'cat /dev/ttyUSB0' for a Dylos DC1700)
+# to Line Protocol which is then posted to an influxdb
+# 
+# 1234,5678 -> '$DATABASE $TAG, small_particles=$SMALL, large_particles=$LARGE `date +%l`'
+#
+
+. /etc/dustypi/dustypi.conf
+
+URL="http://$databasehost:$databaseport"
+ARGUMENT="/write?precision=s&db=$database"
+DBQUERY=$connectiontype://$databasehost:$databaseport$ARGUMENT
+
+function postInflux () {
+while [ 1 -eq 1 ]; do
+  read input;
+  if [[ ! -z "$input" ]]
+  then
+    read SMALL LARGE <<< $( echo ${input} | awk -F"," '{print $1" "$2}' )
+    eval /usr/bin/curl -k -m 30 -s -i -XPOST "'$DBQUERY'" --data-binary "'$measurement,host=$tag small_particles=$SMALL,large_particles=$LARGE `date +%s`'" >/dev/null ; 
+    if [[ $? -eq 0 ]]; then echo $SMALL,$LARGE; else echo error during curl call; fi
+fi       
+done
+}
+
+function usage () {
+echo -e "This script is meant to continously read the output of a Dylos DC1700 and expects an input in the form [0-9]+,[0-9]+<CR><LF> which is then converted to influxdbs line protocol and posted to an influxdb.
+The input is read from /dev/ttyUSB0 as specified in the systemd unit.
+
+The configuration file resides in /etc/dustypi/dustypi.conf and contains all necessary variables.
+
+Usage: dustypi [option]
+Shell options:
+  -h --help\tShow this help
+  -d --debug\tTest database connectivity and print a debug statement once
+"
+}
+
+function debugFunction () {
+  function debugConnection () {
+    curl -s -G $URL/query -u $username:$password --data-urlencode "q=SHOW DATABASES" >/dev/null
+    if [[ $? -eq 0 ]]; then echo OK; else echo NOT OK; fi
+  }
+  function debugDate () {
+    echo `date --date @$1`
+  }
+  function debugQuery () {
+    echo -ne "curl -k -m 30 -i -XPOST '$URL/write?precision=s&db=$database' -u $username:$password --data-binary "
+    var="'$measurement,host=$tag small_particles=$SMALL,large_particles=$LARGE `date +%s`'"
+    echo $var
+  }
+  DATE=`date +%s`
+  echo Date is: `debugDate $DATE`
+  echo DatabaseHost is: $databasehost
+  echo Query is: `debugQuery`
+  echo Database connection is: `debugConnection`
+}
+
+TEMP=`getopt -o hd --long debug,help\
+             -n 'dustypi' -- "$@"`
+if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+
+# Note the quotes around `$TEMP': they are essential!
+eval set -- "$TEMP"
+
+while true; do
+  case "$1" in
+    -h | --help ) usage; break ;;
+    -d | --debug ) SMALL=1234; LARGE=234; debugFunction; break ;;
+    -- ) postInflux; shift; break ;;
+    * ) break ;;
+  esac
+done

@@ -1,0 +1,14 @@
+[Unit]
+Description=Read Dylos DC1700 and write output to influxdb
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/bin/bash -c '/bin/cat /dev/ttyUSB0 | /usr/bin/dustypi'
+Type=simple
+Restart=always
+User=root
+Group=root
+
+[Install]
+WantedBy=default.target
