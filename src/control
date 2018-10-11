@@ -2,12 +2,12 @@ Source: dustypi
 Section: Miscellaneous
 Priority: optional
 Maintainer: Andre Poley (andre.poley@mailbox.org)
-Build-Depends: 
+Build-Depends:
 Standards-Version: 4.0.0
 Homepage: https://github.com/kuchosauronad0/dustypi.git
 
 Package: dustypi
 Architecture: any
-Depends: 
+Depends: curl
 Description: Monitor Air Quality and save results in influxdb
  Monitor Air Quality with a Dylos DC1700 and a raspberry pi and save readings in influxdb.

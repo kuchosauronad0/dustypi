@@ -13,12 +13,14 @@ DBQUERY=$connectiontype://$databasehost:$databaseport$ARGUMENT
 
 function postInflux () {
 while [ 1 -eq 1 ]; do
-  read input;
-  if [[ ! -z "$input" ]]
+  read INPUT </dev/$interface
+  if [[ ! -z "$INPUT" ]]
   then
-    read SMALL LARGE <<< $( echo ${input} | awk -F"," '{print $1" "$2}' )
+    read SMALL LARGE <<< $( echo ${INPUT} | awk -F"," '{print $1" "$2}' )
     eval /usr/bin/curl -k -m 30 -s -i -XPOST "'$DBQUERY'" --data-binary "'$measurement,host=$tag small_particles=$SMALL,large_particles=$LARGE `date +%s`'" >/dev/null ; 
     if [[ $? -eq 0 ]]; then echo $SMALL,$LARGE; else echo error during curl call; fi
+  else
+	echo reading empty input
 fi       
 done
 }
