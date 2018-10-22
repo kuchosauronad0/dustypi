@@ -1,6 +1,6 @@
 # dylos_dustypi
 This repository is meant to be used on a raspberry pi running raspbian 9 (stretch) to collect data from a [Dylos DC1700](http://www.dylosproducts.com/dc1700.html) air quality monitoring device which is then transmitted to an influxdb.
-Input data is read from /dev/ttyUSB0 (defined in /etc/dustypi.conf) and expected to be in the form of [0-9]+,[0-9]+<CR><LF>
+Input data is read from /dev/ttyUSB0, defined in /etc/dustypi.conf.
 
 
 ## Installation
@@ -12,7 +12,7 @@ sudo make install
 ```
 
 ## Configuration
-Adjust /etc/dustypi/dustypi.conf to your taste
+Adjust database settings and usb port in /etc/dustypi/dustypi.conf 
 
 ## Usage
 ```
