@@ -7,7 +7,7 @@
 
 . /etc/dustypi/dustypi.conf
 
-URL="http://$databasehost:$databaseport"
+URL="$connectiontype://$databasehost:$databaseport"
 ARGUMENT="/write?precision=s&db=$database"
 DBQUERY=$connectiontype://$databasehost:$databaseport$ARGUMENT
 
